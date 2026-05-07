@@ -19,7 +19,6 @@ export default function ChatPage() {
     if (!input.trim()) return;
     console.log('Send:', { to: contactEmail, text: input });
     setInput('');
-    // TODO Modul 6+7+8: encrypt + MAC + API call
   }
 
   return (

@@ -10,7 +10,7 @@ export default function ContactListPage() {
     if (!userEmail) navigate('/login');
   }, [userEmail, navigate]);
 
-  const contacts = []; // TODO Modul 8: fetch dari API
+  const contacts = [];
 
   return (
     <div>
