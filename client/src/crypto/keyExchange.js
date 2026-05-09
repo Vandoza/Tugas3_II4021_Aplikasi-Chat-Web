@@ -1,6 +1,6 @@
 import { importPublicKey } from "./login";
 
-// TODO Modul 5
+// Derive ECDH Shared Secret
 export async function deriveSharedSecret(myPrivateKey, theirPublicKey) {
     const sharedSecretBuf = await crypto.subtle.deriveBits(
         {
@@ -14,6 +14,7 @@ export async function deriveSharedSecret(myPrivateKey, theirPublicKey) {
     return sharedSecretBuf; 
 }
 
+// Derive AES Key Enkripsi/Dekripsi dari ECDH Shared Secret
 export async function deriveAESKey(sharedSecret) {
     const hkdfKey = await toHKDFKey(sharedSecret);
     const aeskey = await crypto.subtle.deriveKey(
@@ -35,6 +36,7 @@ export async function deriveAESKey(sharedSecret) {
     return aeskey;
 }
 
+// Derive MAC Key dari Shared Secret
 export async function deriveMACKey(sharedSecret) {
     const hkdfKey = await toHKDFKey(sharedSecret);
     const mackey = await crypto.subtle.deriveKey(
@@ -57,6 +59,7 @@ export async function deriveMACKey(sharedSecret) {
     return mackey;
 }
 
+// Lakukan Key Exchange
 export async function performKeyExchange(myPrivateKey, theirPublicKeyBase64) {
     const theirPublicKey = await importPublicKey(theirPublicKeyBase64);
     const sharedSecret = await deriveSharedSecret(myPrivateKey, theirPublicKey);
@@ -67,7 +70,7 @@ export async function performKeyExchange(myPrivateKey, theirPublicKeyBase64) {
 }
 
 // Helper
-async function toHKDFKey(sharedSecretBuf) {
+function toHKDFKey(sharedSecretBuf) {
     return crypto.subtle.importKey(
         "raw",
         sharedSecretBuf,
