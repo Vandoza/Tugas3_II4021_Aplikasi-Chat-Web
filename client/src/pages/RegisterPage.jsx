@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { generateECDHKeyPair, deriveKeyFromPassword, encryptPrivateKey, exportPublicKey } from '../crypto/registration';
+import { uint8ArrayToBase64 } from '../crypto/utils';
+import { registerUser } from '../api/auth';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -8,7 +11,18 @@ export default function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Register:', { email, password });
+    console.log('Register:', { email, password }); // Debug log
+    try{
+      const {publicKey, privateKey} = await generateECDHKeyPair();
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const privatekeyKey = await deriveKeyFromPassword(password, salt);
+      const {encryptedPrivateKey, iv} = await encryptPrivateKey(privateKey, privatekeyKey);
+      const pubKeyBase64 = await exportPublicKey(publicKey);
+      await registerUser({email, password, publicKey: pubKeyBase64, encryptedPrivateKey, iv, salt: uint8ArrayToBase64(salt)});
+      navigate('/login');
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   return (

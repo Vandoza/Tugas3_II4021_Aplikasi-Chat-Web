@@ -1,4 +1,4 @@
-import { arrayBufferToBase64, uint8ArrayToBase64 } from "./utils"
+import { arrayBufferToBase64, uint8ArrayToBase64, base64ToArrayBuffer, base64ToUint8Array } from "./utils"
 
 // Enkripsi pesan
 export async function encryptMessage(plaintext, aesKey) {
@@ -20,10 +20,10 @@ export async function decryptMessage(ciphertext, iv, aesKey) {
     const plaintext = await crypto.subtle.decrypt(
         {
             name: "AES-GCM",
-            iv: iv
+            iv: base64ToUint8Array(iv)
         },
         aesKey,
-        ciphertext
+        base64ToArrayBuffer(ciphertext)
     );
 
     return new TextDecoder().decode(plaintext);

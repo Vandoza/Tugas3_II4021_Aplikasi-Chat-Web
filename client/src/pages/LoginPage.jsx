@@ -1,14 +1,26 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { loginUser } from '../api/auth';
+import { useSession } from '../context/SessionContext';
+import { recoverPrivateKey } from '../crypto/login';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { setSession } = useSession();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Login:', { email, password });    
+    console.log('Login:', { email, password });  
+    try{
+      const { publicKey, encryptedPrivateKey, iv, salt} = await loginUser({email, password});
+      const privateKey = await recoverPrivateKey(password, encryptedPrivateKey, iv, salt);
+      setSession({ email, key:privateKey})
+      navigate('/contacts');
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   return (
