@@ -97,12 +97,25 @@ export default function ChatPage() {
         {messages.length === 0 ? (
           <p style={{ color: '#aaa' }}>Belum ada pesan.</p>
         ) : (
-          messages.map((msg, i) => (
-            <div key={i}>
-              <strong>{msg.sender_email === userEmail ? 'You' : msg.sender_email}:</strong>{' '}
-              {msg.decryptFailed ? <DecryptionError /> : msg.plaintext}
-            </div>
-          ))
+          messages.map((msg, i) => {
+            const isMine = msg.sender_email === userEmail;
+            return (
+              <div key={i} style={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start', marginBottom: '6px' }}>
+                <div style={{
+                  maxWidth: '65%',
+                  backgroundColor: isMine ? '#dcf8c6' : '#f1f0f0',
+                  borderRadius: '8px',
+                  padding: '6px 10px',
+                }}>
+                  {!isMine && <div style={{ fontSize: '0.75em', fontWeight: 'bold', marginBottom: '2px' }}>{msg.sender_email}</div>}
+                  <span style={{ display: 'block', textAlign: 'left' }}>{msg.decryptFailed ? <DecryptionError /> : msg.plaintext}</span>
+                  <div style={{ fontSize: '0.7em', color: '#aaa', textAlign: 'right', marginTop: '2px' }}>
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </div>
+                </div>
+              </div>
+            );
+          })
         )}
       </div>
       <form onSubmit={handleSend}>
