@@ -1,0 +1,22 @@
+{
+  "name": "tugas3-ii4021-chat-backend",
+  "version": "1.0.0",
+  "description": "Backend aplikasi chat web Tugas 3 II4021 Kriptografi",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "generate:keys": "node scripts/generateJwtKeys.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.9.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
