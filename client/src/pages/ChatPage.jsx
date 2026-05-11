@@ -14,6 +14,8 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [initializing, setInitializing] = useState(true);
+  const [sending, setSending] = useState(false);
   const lastTimestamp = useRef(null);
 
   // Guard + key exchange saat buka chat
@@ -29,6 +31,8 @@ export default function ChatPage() {
         }
       } catch (err) {
         alert(err.message);
+      } finally {
+        setInitializing(false);
       }
     }
     init();
@@ -68,6 +72,7 @@ export default function ChatPage() {
     if (!input.trim() || !aesKeys[contactEmail]) return;
     const { aesKey, macKey } = aesKeys[contactEmail];
 
+    setSending(true);
     try {
       const { ciphertext, iv } = await encryptMessage(input, aesKey);
       const mac = await computeMAC(ciphertext, iv, macKey);
@@ -76,6 +81,8 @@ export default function ChatPage() {
       setInput('');
     } catch (err) {
       alert(err.message);
+    } finally {
+      setSending(false);
     }
   }
 
@@ -85,6 +92,7 @@ export default function ChatPage() {
         <button onClick={() => navigate('/contacts')}>Back</button>
       </div>
       <h2>Chat dengan {contactEmail}</h2>
+      {initializing && <p>Menyiapkan enkripsi...</p>}
       <div style={{ minHeight: '200px', border: '1px solid #ccc', padding: '8px', marginBottom: '8px' }}>
         {messages.length === 0 ? (
           <p style={{ color: '#aaa' }}>Belum ada pesan.</p>
@@ -104,7 +112,9 @@ export default function ChatPage() {
           placeholder="Tulis pesan..."
           style={{ width: '80%' }}
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={!input.trim() || sending || initializing}>
+          {sending ? 'Sending...' : 'Send'}
+        </button>
       </form>
     </div>
   );
