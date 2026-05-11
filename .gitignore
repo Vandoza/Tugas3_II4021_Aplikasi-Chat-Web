@@ -10,7 +10,7 @@ client/dist-ssr/
 # Environment variables
 .env
 .env.local
-server/.env
+backend/.env
 
 # Logs
 *.log
@@ -21,6 +21,8 @@ pnpm-debug.log*
 # SQLite database
 *.sqlite
 *.db
+*.db-wal
+*.db-shm
 
 # Editor
 .vscode/*

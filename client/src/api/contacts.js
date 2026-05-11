@@ -11,5 +11,5 @@ export async function getPublicKey(email) {
         credentials: 'include'
     });
     if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    return res.text();
 }
