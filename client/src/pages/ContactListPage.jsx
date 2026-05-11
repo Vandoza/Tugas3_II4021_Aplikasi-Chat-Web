@@ -8,6 +8,7 @@ export default function ContactListPage() {
   const { userEmail, clearSession } = useSession();
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   async function handleLogout() {
     await logoutUser();
@@ -18,8 +19,8 @@ export default function ContactListPage() {
   useEffect(() => {
     if (!userEmail) { navigate('/login'); return; }
     getContacts()
-      .then(setContacts)
-      .catch(err => alert(err.message));
+      .then(data => { setContacts(data); setLoading(false); })
+      .catch(err => { alert(err.message); setLoading(false); });
   }, [userEmail, navigate]);
 
   return (
@@ -28,12 +29,27 @@ export default function ContactListPage() {
         <button onClick={handleLogout}>Logout</button>
       </div>
       <h2>Kontak</h2>
-      {contacts.length === 0 ? (
+      {loading ? (
         <p>Loading contacts...</p>
+      ) : contacts.length === 0 ? (
+        <p>Belum ada user lain yang terdaftar.</p>
       ) : (
-        <ul>
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {contacts.map(c => (
-            <li key={c.email} onClick={() => navigate(`/chat/${c.email}`)} style={{ cursor: 'pointer' }}>
+            <li
+              key={c.email}
+              onClick={() => navigate(`/chat/${c.email}`)}
+              style={{
+                cursor: 'pointer',
+                padding: '12px 16px',
+                borderBottom: '1px solid #496593',
+                borderRadius: '4px',
+                marginBottom: '4px',
+                backgroundColor: '#142459',
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#496593'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#142459'}
+            >
               {c.email}
             </li>
           ))}

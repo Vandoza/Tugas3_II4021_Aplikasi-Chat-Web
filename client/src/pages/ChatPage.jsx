@@ -84,6 +84,7 @@ export default function ChatPage() {
     <div>
       <div style={{ position: 'fixed', top: '3px', left: '12px' }}>
         <button onClick={() => navigate('/contacts')}>Back</button>
+      </div>
       <h2>Chat dengan {contactEmail}</h2>
       <div style={{ minHeight: '200px', border: '1px solid #ccc', padding: '8px', marginBottom: '8px' }}>
         {messages.length === 0 ? (
@@ -91,7 +92,7 @@ export default function ChatPage() {
         ) : (
           messages.map((msg, i) => (
             <div key={i}>
-              <strong>{msg.sender_email}:</strong>{' '}
+              <strong>{msg.sender_email === userEmail ? 'You' : msg.sender_email}:</strong>{' '}
               {msg.decryptFailed ? <DecryptionError /> : msg.plaintext}
             </div>
           ))
