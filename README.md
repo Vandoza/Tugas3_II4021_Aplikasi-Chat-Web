@@ -86,6 +86,26 @@ npm start
 
 Backend berjalan di `http://localhost:3000`.
 
+### Alternatif: Jalankan Backend dengan Docker
+
+Pastikan Docker Desktop sudah terinstall dan running.
+
+Jika belum punya file `.env`, generate JWT key pair terlebih dahulu:
+
+```bash
+cd backend
+npm install
+npm run generate:keys
+```
+
+Salin output ke `backend/.env` (lihat bagian konfigurasi di bawah), lalu jalankan:
+
+```bash
+docker compose up
+```
+
+Backend berjalan di `http://localhost:3000`. File `backend/.env` tetap harus ada karena berisi JWT keys.
+
 ### 3. Setup Frontend
 
 Buka terminal baru:
