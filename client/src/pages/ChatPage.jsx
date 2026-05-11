@@ -82,6 +82,8 @@ export default function ChatPage() {
 
   return (
     <div>
+      <div style={{ position: 'fixed', top: '3px', left: '12px' }}>
+        <button onClick={() => navigate('/contacts')}>Back</button>
       <h2>Chat dengan {contactEmail}</h2>
       <div style={{ minHeight: '200px', border: '1px solid #ccc', padding: '8px', marginBottom: '8px' }}>
         {messages.length === 0 ? (

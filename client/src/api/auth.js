@@ -19,3 +19,12 @@ export async function loginUser({ email, password }) {
     if (!res.ok) throw new Error(await res.text());
     return res.json();
 }
+
+export async function logoutUser() {
+    const res = await fetch('/api/logout', {
+        method: 'POST',
+        credentials:'include'
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+}
