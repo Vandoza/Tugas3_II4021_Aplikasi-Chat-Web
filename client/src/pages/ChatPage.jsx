@@ -73,7 +73,6 @@ export default function ChatPage() {
       const mac = await computeMAC(ciphertext, iv, macKey);
       const timestamp = new Date().toISOString();
       await sendMessage({ senderEmail: userEmail, receiverEmail: contactEmail, ciphertext, iv, mac, timestamp });
-      setMessages(prev => [...prev, { sender_email: userEmail, plaintext: input, timestamp }]);
       setInput('');
     } catch (err) {
       alert(err.message);
