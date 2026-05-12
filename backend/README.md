@@ -1,40 +1,14 @@
-# Cara Menjalankan Backend
+# Cara Menjalankan Aplikasi
 
-## 1. Masuk ke Folder Backend
+Aplikasi ini dapat dijalankan menggunakan Docker Compose. Docker Compose akan menjalankan dua service utama, yaitu `server` sebagai backend Express dan `client` sebagai frontend Vite React. Pada mode Docker, JWT key akan dibuat otomatis saat container backend dijalankan, sehingga pengguna tidak perlu membuat file `.env` atau menyalin JWT key secara manual.
 
-Jalankan perintah berikut dari root project:
+## 1. Menjalankan Aplikasi dengan Docker
+
+Masuk ke folder `backend` dari root project:
 
 ```bash
 cd backend
 ```
-
-## 2. Buat File Environment
-
-Salin file `.env.example` menjadi `.env`.
-
-Untuk Windows PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Untuk Git Bash/Linux/macOS:
-
-```bash
-cp .env.example .env
-```
-
-## 3. Generate JWT Key
-
-Jalankan:
-
-```bash
-npm run generate:keys
-```
-
-Copy hasil `JWT_PRIVATE_KEY_B64` dan `JWT_PUBLIC_KEY_B64` ke file `.env`.
-
-## 4. Jalankan dengan Docker
 
 Pastikan Docker Desktop sudah berjalan, lalu jalankan:
 
@@ -42,39 +16,33 @@ Pastikan Docker Desktop sudah berjalan, lalu jalankan:
 docker compose up --build
 ```
 
-Jika berhasil, terminal akan menampilkan:
+Jika berhasil, terminal akan menampilkan log seperti berikut:
 
 ```txt
+JWT keys generated automatically.
 Server running on http://localhost:3000
+VITE ready
+Local: http://localhost:5173/
 ```
 
-## 5. Keterangan Port Docker
+Keterangan:
 
-Pada Docker, terdapat dua port yang perlu dibedakan:
+- `JWT keys generated automatically.` menandakan JWT key berhasil dibuat otomatis oleh backend.
+- `Server running on http://localhost:3000` menandakan backend berjalan di dalam container.
+- `Local: http://localhost:5173/` menandakan frontend dapat diakses dari browser.
+
+## 2. Akses Aplikasi
+
+Frontend dapat dibuka melalui browser pada alamat:
 
 ```txt
-Port internal container : 3000
-Port host/laptop       : 8088
+http://localhost:5173
 ```
 
-Artinya, aplikasi Node.js di dalam container tetap berjalan pada port `3000`, tetapi dari browser, PowerShell, Postman, atau frontend di laptop, backend diakses melalui port `8088`.
-
-Jadi URL backend ketika dijalankan dengan Docker adalah:
-
-```txt
-http://localhost:8088
-```
-
-Contoh health check:
+Backend dapat dicek melalui health check:
 
 ```txt
 http://localhost:8088/health
-```
-
-Untuk PowerShell:
-
-```powershell
-Invoke-WebRequest -Uri "http://localhost:8088/health" -Method GET -UseBasicParsing
 ```
 
 Ekspektasi response:
@@ -83,19 +51,81 @@ Ekspektasi response:
 {"status":"ok","service":"tugas3-ii4021-chat-backend"}
 ```
 
-Port `8088` digunakan sebagai port host karena pada perangkat pengujian port `3000` dan `3001` tidak dapat digunakan oleh konfigurasi Windows. Di dalam container, backend tetap berjalan pada port `3000`.
+Untuk PowerShell:
 
-## 6. Menghentikan Docker
+```powershell
+Invoke-WebRequest -Uri "http://localhost:8088/health" -Method GET -UseBasicParsing
+```
 
-Tekan `Ctrl + C` pada terminal Docker, lalu jalankan:
+## 3. Keterangan Port Docker
+
+Pada Docker, terdapat beberapa port yang perlu dibedakan:
+
+```txt
+Frontend host/laptop       : 5173
+Frontend internal container: 5173
+
+Backend host/laptop        : 8088
+Backend internal container : 3000
+```
+
+Artinya, frontend diakses dari browser melalui `http://localhost:5173`, backend di dalam container tetap berjalan pada port `3000`, dan backend dari host/laptop dapat diakses melalui port `8088`.
+
+## 4. Menghentikan Docker
+
+Untuk menghentikan container, tekan `Ctrl + C` pada terminal yang menjalankan Docker Compose, lalu jalankan:
 
 ```bash
 docker compose down
 ```
 
-## 7. Alternatif: Menjalankan Tanpa Docker
+Jika ingin sekaligus menghapus volume database agar data akun dan pesan terhapus, jalankan:
 
-Masuk ke folder backend:
+```bash
+docker compose down -v
+```
+
+Perintah `down -v` akan menghapus volume SQLite yang digunakan oleh backend, sehingga aplikasi kembali ke kondisi kosong saat dijalankan ulang.
+
+## 5. Catatan JWT Key pada Docker
+
+Pada mode Docker, JWT key dibuat otomatis oleh script:
+
+```txt
+backend/scripts/setupEnv.js
+```
+
+Script tersebut dijalankan sebelum backend server aktif melalui script:
+
+```bash
+npm run docker:start
+```
+
+Alur saat Docker dijalankan:
+
+```txt
+docker compose up --build
+        ↓
+container backend berjalan
+        ↓
+setupEnv.js dijalankan
+        ↓
+JWT key dibuat otomatis jika belum tersedia
+        ↓
+backend server dijalankan
+```
+
+Dengan mekanisme ini, pengguna tidak perlu menjalankan:
+
+```bash
+npm run generate:keys
+```
+
+dan tidak perlu menyalin `JWT_PRIVATE_KEY_B64` maupun `JWT_PUBLIC_KEY_B64` secara manual ke file `.env`.
+
+## 6. Alternatif: Menjalankan Backend Tanpa Docker
+
+Jika ingin menjalankan backend secara lokal tanpa Docker, masuk ke folder backend:
 
 ```bash
 cd backend
@@ -105,6 +135,12 @@ Install dependency:
 
 ```bash
 npm install
+```
+
+Generate JWT key otomatis:
+
+```bash
+npm run setup:env
 ```
 
 Jalankan server:

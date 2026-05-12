@@ -6,7 +6,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "generate:keys": "node scripts/generateJwtKeys.js"
+    "generate:keys": "node scripts/generateJwtKeys.js",
+    "setup:env": "node scripts/setupEnv.js",
+    "docker:start": "node scripts/setupEnv.js && node src/server.js"
   },
   "keywords": [],
   "author": "",

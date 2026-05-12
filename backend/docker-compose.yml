@@ -5,16 +5,19 @@ services:
       dockerfile: backend/Dockerfile
     container_name: tugas3-chat-server
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DATABASE_PATH: /app/backend/data/chat.db
+      - "8088:3000"
     volumes:
       - chat_data:/app/backend/data
-    restart: unless-stopped
+
+  client:
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+    container_name: tugas3-chat-client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
 
 volumes:
   chat_data:
