@@ -12,6 +12,8 @@ export async function encryptMessage(plaintext, aesKey) {
         new TextEncoder().encode(plaintext)
     );
 
+    console.log("Encrypting message: ", plaintext);
+
     return {ciphertext: arrayBufferToBase64(ciphertext), iv: uint8ArrayToBase64(iv)};
 }
 
@@ -33,8 +35,10 @@ export async function decryptMessage(ciphertext, iv, aesKey) {
 export async function safeDecryptMessage(ciphertext, iv, aesKey) {
     try {
         const plaintext = await decryptMessage(ciphertext, iv, aesKey);
+        console.log("Message decrypted: ", plaintext);
         return { success: true, plaintext };
     } catch (e) {
+        console.log("Failed to decrypt message");
         return { success: false, error: e.message };
     }
 }

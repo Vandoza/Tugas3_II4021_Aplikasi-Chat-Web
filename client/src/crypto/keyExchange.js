@@ -33,6 +33,10 @@ export async function deriveAESKey(sharedSecret) {
         ["encrypt", "decrypt"]
     );
 
+    const rawAesKey = await crypto.subtle.exportKey("raw", aeskey);
+    const derivedAesKey = btoa(String.fromCharCode(...new Uint8Array(rawAesKey)));
+    console.log('[KeyExchange] Derived AES Key:', derivedAesKey);
+
     return aeskey;
 }
 
@@ -63,6 +67,10 @@ export async function deriveMACKey(sharedSecret) {
 export async function performKeyExchange(myPrivateKey, theirPublicKeyBase64) {
     const theirPublicKey = await importPublicKey(theirPublicKeyBase64);
     const sharedSecret = await deriveSharedSecret(myPrivateKey, theirPublicKey);
+
+    const sharedSecretB64 = btoa(String.fromCharCode(...new Uint8Array(sharedSecret)));
+    console.log('[KeyExchange] Shared Secret (base64):', sharedSecretB64);
+
     const aesKey = await deriveAESKey(sharedSecret);
     const macKey = await deriveMACKey(sharedSecret);
 
